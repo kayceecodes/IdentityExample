@@ -1,0 +1,27 @@
+services:  
+  db:
+      image: postgres
+      container_name: identityexampledb
+      environment:
+        PGUSER: postgres
+        POSTGRES_PASSWORD_FILE: /run/secrets/postgres-secret  # Using the secret for the password
+      secrets:
+        - postgres-secret
+      volumes:
+        - db-data:/var/lib/postgresql/data
+        - ./secrets/postgres-secret.txt:/run/secrets/postgres-secret
+      ports:
+        - "5430:5432"
+      restart: always
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready"]
+        interval: 1s
+        timeout: 5s
+        retries: 10
+
+volumes:
+  db-data:
+
+secrets:
+  postgres-secret:
+      external: true
